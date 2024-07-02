@@ -1,7 +1,7 @@
 {
     "id": "generate-block-id",
     "name": "Generate Block ID",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "minAppVersion": "0.12.0",
     "description": "Right click to show block reference. Copy to clipboard.",
     "author": "SH3LL",
