@@ -1,3 +1,3 @@
-# Obsidian Show Block
-Simple plugin that allows you to right click on a line and show block refence ID. From the menu you can copy the block to your clipboard. 
+# Obsidian Generate Block ID
+Ribbon and command palette to generate a human-readable block ID based on header structure. If no headers are present it uses file name. Each block is generated with sequential numbers.
 
