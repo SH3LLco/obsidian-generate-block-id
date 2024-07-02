@@ -10,6 +10,7 @@ Ribbon and command palette to generate a human-readable block ID based on header
 - run command
 
 # How to install
+> Plugin submitted for review for official community plugins
 - enable community plugins
 - download zip
 - extract to /vault/.obsidian/plugins folder
