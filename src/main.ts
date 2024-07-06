@@ -1,16 +1,15 @@
-const { Plugin, MarkdownView } = require('obsidian');
+const { Plugin, MarkdownView, setIcon } = require('obsidian');
 
 class HumanReadableBlockIDPlugin extends Plugin {
     onload() {
-        // Add a ribbon icon for the block ID generation
-        this.addRibbonIcon('dice', 'Generate Block ID', () => {
+
+        this.addRibbonIcon('box', 'Generate Block ID', () => {
             this.generateBlockIdForActiveView();
         });
 
-        // Add a command to the command palette for block ID generation
         this.addCommand({
             id: 'generate-block-id',
-            name: 'Command',
+            name: 'Generate Block ID',
             callback: () => {
                 this.generateBlockIdForActiveView();
             },
@@ -26,38 +25,39 @@ class HumanReadableBlockIDPlugin extends Plugin {
         }
     }
 
-    generateBlockId(editor, activeLeaf) {
-        const cursorPos = editor.getCursor();
-        const lines = editor.getValue().split('\n');
-        let headerStack = [];
-        const fileName = this.sanitizeString(activeLeaf.view.file.basename);
 
-        // Traverse backwards to find all headers up to the top
-        for (let i = cursorPos.line; i >= 0; i--) {
-            if (this.isHeader(lines[i])) {
-                headerStack.unshift(this.sanitizeString(this.formatHeader(lines[i])));
+        generateBlockId(editor, activeLeaf) {
+            const cursorPos = editor.getCursor();
+            const lines = editor.getValue().split('\n');
+            let headerStack = [];
+            let lastHeaderLevel = 0;
+    
+            // Traverse backwards to find the closest relevant headers up to the current point
+            for (let i = cursorPos.line; i >= 0; i--) {
+                if (this.isHeader(lines[i])) {
+                    const level = this.headerLevel(lines[i]);
+                    if (level < lastHeaderLevel || lastHeaderLevel === 0) {
+                        const header = this.sanitizeString(this.formatHeader(lines[i]));
+                        headerStack.unshift(header);
+                        lastHeaderLevel = level;
+                    }
+
+                }
             }
-        }
 
-        // If no headers are found, use the file name as the base for the block ID
-        if (headerStack.length === 0) {
-            headerStack.push(fileName);
-        }
-
+        // Formulate the header ID based on the stack
         const headerId = headerStack.join('--');
-        // Count existing blocks under the current header section
-        const foundBlocks = this.countBlocksUnderHeader(lines, headerId);
+        const foundBlocks = this.countBlocksUnderCurrentHeader(lines, cursorPos.line, headerId);
 
-        // Generate the block ID including all headers in the stack or file name
+        // Generate the block ID including all relevant headers
         const blockId = `${headerId}-${foundBlocks + 1}`;
         const blockReference = `^${blockId}`;
 
         // Insert the block ID on a new line at the cursor position
-        editor.replaceRange(`\n${blockReference}\n`, { line: cursorPos.line + 1, ch: 0 });
+        editor.replaceRange(`${blockReference}\n`, { line: cursorPos.line + 1, ch: 0 });
     }
 
     isHeader(line) {
-        // Ensures that headers are at the beginning of the line and followed by a space
         return /^(#+)\s/.test(line);
     }
 
@@ -66,23 +66,23 @@ class HumanReadableBlockIDPlugin extends Plugin {
     }
 
     sanitizeString(input) {
-        // Replace spaces with hyphens, then remove all characters that are not alphanumeric or hyphens
-        let sanitized = input.replace(/\s+/g, '-');
-        sanitized = sanitized.replace(/[^a-z0-9-]/gi, '');
-        sanitized = sanitized.replace(/-+/g, '-');
-        sanitized = sanitized.replace(/^-+|-+$/g, '');
-        return sanitized.toLowerCase();
+        return input.replace(/\s+/g, '-').replace(/[^a-z0-9-]/gi, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
     }
 
-    countBlocksUnderHeader(lines, headerId) {
+    countBlocksUnderCurrentHeader(lines, currentLine, headerId) {
         const blockIdPrefix = `^${headerId}-`;
         let count = 0;
-        for (let line of lines) {
-            if (line.trim().startsWith(blockIdPrefix)) {
+        for (let i = 0; i <= currentLine; i++) {
+            if (lines[i].includes(blockIdPrefix)) {
                 count++;
             }
         }
         return count;
+    }
+
+    headerLevel(line) {
+        const match = line.match(/^(\#+)\s/);
+        return match ? match[1].length : 0;
     }
 }
 
