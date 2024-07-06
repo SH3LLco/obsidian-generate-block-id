@@ -1,5 +1,5 @@
 # Obsidian Generate Block ID
-Ribbon and command palette to generate a human-readable block ID based on header structure. If no headers are present it uses file name. Each block is generated with sequential numbers. Additionally, block references only allow alphanumeric characters and hyphens. Upon generation, the plugin:
+Ribbon and command palette to generate a human-readable block ID based on header structure. Each block is generated with sequential numbers. Additionally, block references only allow alphanumeric characters and hyphens. Upon generation, the plugin:
  - Sanatizes special characters
  - Replaces spaces with hyphens
  - Separates nested headers with two hypens.
