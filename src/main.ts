@@ -9,7 +9,7 @@ class HumanReadableBlockIDPlugin extends Plugin {
 
         this.addCommand({
             id: 'generate-block-id',
-            name: 'Generate Block ID',
+            name: 'Create Block ID',
             callback: () => {
                 this.generateBlockIdForActiveView();
             },
