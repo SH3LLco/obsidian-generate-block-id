@@ -11,7 +11,8 @@ Ribbon and command palette to generate a human-readable block ID based on header
 
 # How to install
 > Plugin submitted for review for official community plugins
+- Install via obsidian community plugin store (when approved)
 - enable community plugins
-- download zip
+- download latest release [here](https://github.com/SH3LLco/obsidian-generate-block-id/releases/latest)
 - extract to /vault/.obsidian/plugins folder
 - enable plugin in community plugin settings
